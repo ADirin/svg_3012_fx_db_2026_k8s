@@ -1,0 +1,47 @@
+---
+# 1. Database Credentials Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mariadb-secret
+type: Opaque
+stringData:
+  mariadb-root-password: "Test12"
+  mariadb-database: "svg_travel_db"
+
+---
+# 2. JavaFX App Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javafx-travel-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: javafx-travel-app
+  template:
+    metadata:
+      labels:
+        app: javafx-travel-app
+    spec:
+      containers:
+        - name: javafx-app
+          image: amirdirin/svg_3012_db_k8s:latest
+          imagePullPolicy: Never
+          env:
+            - name: DB_HOST
+              value: "host.minikube.internal" # Routes to your host Windows machine
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "svg_travel_db"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-root-password
+            - name: DISPLAY
+              value: "host.minikube.internal:0.0"

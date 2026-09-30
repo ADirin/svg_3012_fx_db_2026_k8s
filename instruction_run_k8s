@@ -1,0 +1,27 @@
+I. Ensure XMing is runnin with access control disabled
+- open powershel and launch XMing with the -ac flag:
+      "Start-Process "C:\Program Files (x86)\Xming\Xming.exe" -ArgumentList "-ac"
+
+II. Grant MariaDB remote access in HeidiSQL
+- Open HeidiSQL, connect to your local database, open a Query tab, and run:
+    "GRANT ALL PRIVILEGES ON svg_travel_db.* TO 'root'@'%' IDENTIFIED BY 'Test12';
+    FLUSH PRIVILEGES;"
+
+III. Build and load the Docker image into Minikube
+- Run the following in PowerShell:
+    "# 1. Build the Docker image locally
+        docker build -t amirdirin/svg_3012_db_k8s:latest .
+
+    "# 2. Save and load image tarball into Minikube
+        docker save amirdirin/svg_3012_db_k8s:latest -o app-image.tar
+        minikube image load app-image.tar
+        Remove-Item app-image.tar "
+
+IV. Apply Kubernetes manifests and start the pod
+- Deploy the updated configuration and trigger a restart:
+    "kubectl apply -f k8s-manifests.yaml
+     kubectl rollout restart deployment javafx-travel-app"
+
+V. Monitor application logs
+- Stream the logs to confirm connection and verify the GUI window renders on your desktop:
+    "kubectl logs -l app=javafx-travel-app -f"
