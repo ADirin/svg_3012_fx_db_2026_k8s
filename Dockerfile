@@ -2,12 +2,12 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-# Install GUI libraries
+# 1. Install GUI libraries
 RUN apt-get update && apt-get install -y \
     libx11-6 libxext6 libxrender1 libxtst6 libxi6 libgtk-3-0 mesa-utils wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Download JavaFX SDK
+# 3. Download JavaFX SDK
 RUN mkdir -p /javafx-sdk \
     && wget -O javafx.zip https://download2.gluonhq.com/openjfx/21/openjfx-21_linux-x64_bin-sdk.zip \
     && unzip javafx.zip -d /javafx-sdk \
